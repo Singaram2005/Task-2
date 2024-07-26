@@ -1,0 +1,191 @@
+Step 1: Set Up Your Environment
+Create a basic HTML file:
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Last Stand</title>
+    <style>
+        canvas {
+            display: block;
+            margin: 0 auto;
+            background: #000;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <script src="game.js"></script>
+</body>
+</html>
+Create a JavaScript file (game.js):
+window.onload = function() {
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Game variables
+    let gameOver = false;
+    let score = 0;
+    const keys = {};
+
+    // Survivor properties
+    const survivor = {
+        x: canvas.width / 2,
+        y: canvas.height - 60,
+        width: 50,
+        height: 50,
+        color: 'blue',
+        speed: 5,
+        health: 100
+    };
+
+    // Zombie properties
+    const zombies = [];
+    const zombieProperties = {
+        width: 40,
+        height: 40,
+        color: 'green',
+        speed: 2
+    };
+
+    // Control survivor
+    document.addEventListener('keydown', function(event) {
+        keys[event.key] = true;
+    });
+    document.addEventListener('keyup', function(event) {
+        keys[event.key] = false;
+    });
+
+    function moveSurvivor() {
+        if (keys['ArrowLeft'] && survivor.x > 0) {
+            survivor.x -= survivor.speed;
+        }
+        if (keys['ArrowRight'] && survivor.x < canvas.width - survivor.width) {
+            survivor.x += survivor.speed;
+        }
+        if (keys['ArrowUp'] && survivor.y > 0) {
+            survivor.y -= survivor.speed;
+        }
+        if (keys['ArrowDown'] && survivor.y < canvas.height - survivor.height) {
+            survivor.y += survivor.speed;
+        }
+    }
+
+    function createZombie() {
+        const zombie = {
+            x: Math.random() * canvas.width,
+            y: -zombieProperties.height,
+            width: zombieProperties.width,
+            height: zombieProperties.height,
+            color: zombieProperties.color,
+            speed: zombieProperties.speed
+        };
+        zombies.push(zombie);
+    }
+
+    function moveZombies() {
+        zombies.forEach((zombie, index) => {
+            zombie.y += zombie.speed;
+            if (zombie.y > canvas.height) {
+                zombies.splice(index, 1);
+            }
+        });
+    }
+
+    function detectCollisions() {
+        zombies.forEach((zombie, index) => {
+            if (
+                survivor.x < zombie.x + zombie.width &&
+                survivor.x + survivor.width > zombie.x &&
+                survivor.y < zombie.y + zombie.height &&
+                survivor.y + survivor.height > zombie.y
+            ) {
+                survivor.health -= 10;
+                zombies.splice(index, 1);
+                if (survivor.health <= 0) {
+                    gameOver = true;
+                }
+            }
+        });
+    }
+
+    function drawSurvivor() {
+        ctx.fillStyle = survivor.color;
+        ctx.fillRect(survivor.x, survivor.y, survivor.width, survivor.height);
+    }
+
+    function drawZombies() {
+        zombies.forEach(zombie => {
+            ctx.fillStyle = zombie.color;
+            ctx.fillRect(zombie.x, zombie.y, zombie.width, zombie.height);
+        });
+    }
+
+    function drawScore() {
+        ctx.fillStyle = 'white';
+        ctx.font = '20px Arial';
+        ctx.fillText('Score: ' + score, 20, 30);
+    }
+
+    function drawHealth() {
+        ctx.fillStyle = 'red';
+        ctx.fillRect(20, 50, survivor.health, 20);
+    }
+
+    function gameLoop() {
+        if (gameOver) {
+            ctx.fillStyle = 'red';
+            ctx.font = '50px Arial';
+            ctx.fillText('Game Over', canvas.width / 2 - 150, canvas.height / 2);
+            return;
+        }
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        moveSurvivor();
+        moveZombies();
+        detectCollisions();
+        drawSurvivor();
+        drawZombies();
+        drawScore();
+        drawHealth();
+
+        requestAnimationFrame(gameLoop);
+    }
+
+    // Spawn zombies at intervals
+    setInterval(createZombie, 1000);
+
+    gameLoop();
+};
+Step 2: Game Features
+Normal Mode:
+
+The survivor moves left, right, and jumps.
+The survivor shoots zombies.
+Implement gravity for ammunition.
+Basic game features: pause, play, scoring system, leaderboard.
+Hacker Mode:
+
+Power-ups for the survivor (e.g., temporary immunity, increased ammunition rate).
+Different weapons and the ability to switch between them.
+Zombies with different abilities (e.g., climber zombies).
+Character animations using sprite sheets.
+Hacker++ Mode:
+
+Defensive items (mines, traps, blocks).
+Automated defenses.
+Equip the survivor with a jetpack.
+Implement weapon recoil.
+Dynamic camera that follows the survivor.
+Step 3: Resources
+Use the Canvas API for rendering.
+Vanilla JavaScript for game logic.
+Step 4: Constraints
+Use only Vanilla JavaScript (no frameworks like Phaser.io).
+No backend required.
+Step 5: Implementation
+Follow the game concept and features to progressively build the game.
+Test and debug each feature thoroughly.
+Ensure the game meets the task requirements by the deadline.
+This guide should provide a solid foundation for Akshay to start developing the "Last Stand" game.
